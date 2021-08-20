@@ -85,6 +85,32 @@ db.movies.aggregate([{
   }
 }]);
 
+// requisito 4
+db.movies.aggregate([{
+  $project: { 
+    _id: 0,
+    title_split: 
+      { 
+        $split:  ["$title", " "],
+        
+      },
+    
+  },
+
+}, { 
+      $match: {
+        title_split: {
+          $size: 1
+        }
+      }
+}, {
+  $sort: {
+    title_split: 1,
+  }
+}, {
+  $count: "title_split"
+}])
+
 //just display
 //db.movies.aggregate();
 
