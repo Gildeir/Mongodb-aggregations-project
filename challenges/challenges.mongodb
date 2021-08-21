@@ -248,6 +248,56 @@ db.movies.aggregate([{
 
 // requisito 8
 
+// requisito 9
+db.trips.aggregate([{
+  $match: { $and: [
+    {birthYear: { $ne: ""}},
+    {birthYear: { $exists: true}},
+  ]},
+},
+  {
+  $group: {
+    _id: 1,
+    maiorAnoNascimento: { $max: { $toInt: "$birthYear"}},
+    menorAnoNascimento: { $min: { $toInt: "$birthYear"}}
+  }
+}, {
+  $project: {
+    _id: 0,
+    maiorAnoNascimento: "$maiorAnoNascimento",
+    menorAnoNascimento: "$menorAnoNascimento"
+    
+  }
+}])
+
+/*
+
+  "startTime": {
+    "$date": "2016-01-01T00:01:06Z"
+  },
+  "stopTime": {
+    "$date": "2016-01-01T00:15:56Z"
+  } 
+  
+  */
+const miliSecond = 60* 60* 1000;
+db.trips.aggregate([{
+  $group: {
+    _id: "$usertype",
+    duracaoMedia: { $avg: { $divide: [{ $subtract: ["$stopTime", "$startTime" ] }, miliSecond]}}
+    
+  }
+}, {
+  $project:{
+    _id: 0,
+    tipo:"$_id",
+    duracaoMedia: { $round:["$duracaoMedia", 2]}
+
+  }
+}, {
+  $sort: { duracaoMedia: 1}
+}])
+
 
 //just display
 //db.movies.aggregate();
